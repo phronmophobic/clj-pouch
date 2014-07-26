@@ -1,2 +1,5 @@
 .lein*
+node_modules/
 target/
+*.swp
+checkouts/
