@@ -1,4 +1,5 @@
 .lein*
+pom.xml
 node_modules/
 target/
 *.swp
