@@ -6,17 +6,16 @@
 (defn- hash-to-obj
   "Convert a CLJS structure to a JS object, yielding empty JS object for nil input"
   [obj]
-  (let [jso (or (clj->js obj) (js-obj))]
-    jso))
+  (or (clj->js obj) (js-obj)))
 
 (defn- obj-to-hash
   "Convert a JS object to a hash, yielding nil for nil JS object"
   [obj]
   (if obj (js->clj obj :keywordize-keys true) {}))
 
-#_(declare *blob-builder*)
+(declare *blob-builder*)
 
-#_(defn- create-blob
+(defn- create-blob
   "Create a Blob object from the given data and data type"
   [data data-type]
   (try
@@ -38,15 +37,15 @@
        true
        (throw (js/Error. "Cannot create blob on this platform")))))))
 
-#_(defmulti to-blob type)
-#_(defmethod to-blob (type "foo")
+(defmulti to-blob type)
+(defmethod to-blob (type "foo")
   [str]
   (let [blob (create-blob str "text/plain")]
     blob))
-#_(defmethod to-blob js/Blob
+(defmethod to-blob js/Blob
   [blob]
   blob)
-#_(defmethod to-blob :default
+(defmethod to-blob :default
   [obj]
   (throw (js/Error. (str "to-blob with strange value " obj " of type " (type obj)))))
 
@@ -129,6 +128,7 @@
     (.allDocs db (hash-to-obj options) (responder c))
     c))
 
+; NEEDS WORK
 (defn changes
   "React on changes, returning channel with result"
   [db & [options]]
@@ -141,21 +141,31 @@
   [source target & [options]]
   (js/PouchDB.replicate source target (hash-to-obj options)))
 
-#_(defn put-attachment
+#_(defn sync-db
+  "Sync database"
+  [source target & [options]]
+  (js/PouchDB.sync source target (hash-to-obj options)))
+
+(defn sync-db
+  "Sync database"
+  [db target & [options]]
+  (.sync db target (hash-to-obj options)))
+
+(defn put-attachment
   "Put an attachment to a document, returning channel to result"
   [db docid attachmentid rev doc type]
   (let [c (chan 1)]
     (.putAttachment db docid attachmentid rev (to-blob doc) type (responder c))
     c))
 
-#_(defn get-attachment
+(defn get-attachment
   "Get an attachment from a document, returning channel to result"
   [db docid attachmentid & [options]]
   (let [c (chan 1)]
     (.getAttachment db docid attachmentid (hash-to-obj options) (responder c))
     c))
 
-#_(defn remove-attachment
+(defn remove-attachment
   "Remove attachment from a document, returning channel to result"
   [db docid attachmentid rev]
   (let [c (chan 1)]
