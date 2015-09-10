@@ -1,6 +1,7 @@
 (ns clj-pouchdb.core
   "Wrapper for PouchDB for ClojureScript"
-  (:require [cljs.core.async :as async :refer [put! <! >! timeout chan]])
+  (:require [cljs.core.async :as async :refer [put! <! >! timeout chan]]
+            cljsjs.pouchdb)
   (:require-macros [cljs.core.async.macros :as m :refer [go alt!]]))
 
 (defn- hash-to-obj
