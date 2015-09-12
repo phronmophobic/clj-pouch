@@ -108,6 +108,23 @@
     (.get db docid (hash-to-obj options) (responder c))
     c))
 
+
+(defn update-doc [db docid f & [options]]
+  (let [c (chan 1)]
+    (go
+      (let [obj (<! (get-doc db docid))]
+        (if-let [error (:error obj)]
+          (if (= 404 (aget error "status"))
+            (put! c (<! (put-doc db (f nil) docid)))
+            (put! c obj))
+          (let [new-obj (f obj)
+                result (if (not= obj new-obj)
+                         (<! (put-doc db new-obj docid))
+                         obj)]
+            (put! c result)))))
+    c))
+
+
 (defn remove-doc
   "Remove document, returning channel to result"
   [db doc & [options]]

@@ -1,4 +1,4 @@
-(defproject whodidthis/clj-pouch "0.1.1-SNAPSHOT"
+(defproject whodidthis/clj-pouch "0.1.2-SNAPSHOT"
   :description "Wrapper for PouchDB in ClojureScript"
   :url "https://github.com/whodidthis/clj-pouch"
   :dependencies [[org.clojure/clojure "1.7.0"]
